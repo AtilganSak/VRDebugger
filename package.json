@@ -1,0 +1,13 @@
+{
+  "name": "com.heatinteractive.vrdebugger",
+  "displayName": "VRDebugger",
+  "version": "0.0.1",
+  "unity": "2021.3",
+  "description": "Debug tool for VR scenes",
+  "author": {
+    "name": "Atilgan Sak",
+    "email": "sak.atilgan@gmail.com",
+    "url": "https://github.com/AtilganSak"
+  },
+  "keywords": ["tool", "editor", "utility", "VR", "debug", "debugger", "log"]
+}
