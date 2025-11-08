@@ -14,7 +14,7 @@ namespace HeatInteractive.VRDebugger
         {
             for (int i = 0; i < windows.Length; i++)
             {
-                if(i == 0)
+                if(i == 1)
                     windows[i].Show();
                 else
                     windows[i].Hide();
