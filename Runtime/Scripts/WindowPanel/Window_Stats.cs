@@ -1,7 +1,10 @@
 using HeatInteractive.VRDebugger;
 using UnityEngine;
 
-public class Window_Stats : BaseWindow
+namespace HeatInteractive.VRDebugger
 {
+    public class Window_Stats : BaseWindow
+    {
     
+    }
 }

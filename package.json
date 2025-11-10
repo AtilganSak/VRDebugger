@@ -1,7 +1,7 @@
 {
   "name": "com.heatinteractive.vrdebugger",
   "displayName": "VRDebugger",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "unity": "2021.3",
   "description": "Debug tool for VR scenes",
   "author": {

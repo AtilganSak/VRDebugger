@@ -1,8 +1,6 @@
-using HeatInteractive.VRDebugger;
 using UnityEditor;
-using UnityEngine;
 
-namespace HeatInteractive
+namespace HeatInteractive.VRDebugger.Editor
 {
     public class DebuggerEditor
     {

@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace heatinteractive.VRDebugger
+namespace HeatInteractive.VRDebugger
 {
     public class CategoryItem : MonoBehaviour
     {

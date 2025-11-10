@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using heatinteractive.VRDebugger;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -38,6 +37,7 @@ namespace HeatInteractive.VRDebugger
             base.Awake();
 
             VRDebug.SubscribeDebugLogEvent(OnNewDebugLogged);
+            Application.logMessageReceived += OnNewLogMessageReceived;
 
             clearButton.onClick.AddListener(OnPressedClearButton);
             infoControlButton.OnClicked += () => OnPressedControlButton(VRLogType.Info);
@@ -59,6 +59,11 @@ namespace HeatInteractive.VRDebugger
         private void OnDestroy()
         {
             VRDebug.UnsubscribeDebugLogEvent(OnNewDebugLogged);
+        }
+        
+        private void OnNewLogMessageReceived(string condition, string stackTrace, LogType type)
+        {
+            VRDebug.Log(condition, type.ToVRLogType(), "Unity Logs");
         }
 
         private void OnNewDebugLogged(int uniqueID)

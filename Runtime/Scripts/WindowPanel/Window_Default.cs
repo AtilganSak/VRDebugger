@@ -1,7 +1,9 @@
 using HeatInteractive.VRDebugger;
-using UnityEngine;
 
-public class Window_Default : BaseWindow
+namespace HeatInteractive.VRDebugger
 {
+    public class Window_Default : BaseWindow
+    {
     
+    }
 }
