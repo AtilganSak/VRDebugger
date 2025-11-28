@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace HeatInteractive.VRDebugger
 {
-    public class TabButton_Stats : TabButton_Console
+    public class TabButton_Stats : TabButton
     {
         [SerializeField] private TMP_Text fpsText;
     

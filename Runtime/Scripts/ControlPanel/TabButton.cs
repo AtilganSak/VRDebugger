@@ -15,7 +15,7 @@ namespace HeatInteractive.VRDebugger
         
         public event Action<int> OnClick;
         
-        private void Awake()
+        protected virtual void Awake()
         {
             button.onClick.AddListener(OnButtonClick);
         }
