@@ -417,7 +417,7 @@ GameObject:
   - component: {fileID: 2266724274548448315}
   - component: {fileID: 9147616655925535736}
   m_Layer: 0
-  m_Name: ConsoleToggle
+  m_Name: Console_Toggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

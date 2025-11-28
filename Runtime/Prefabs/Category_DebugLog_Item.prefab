@@ -166,7 +166,7 @@ GameObject:
   - component: {fileID: 7482288800282346154}
   - component: {fileID: 2908797368001190078}
   m_Layer: 0
-  m_Name: CategoryItem
+  m_Name: Category_DebugLog_Item
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

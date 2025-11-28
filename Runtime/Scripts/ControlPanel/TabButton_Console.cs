@@ -10,19 +10,7 @@ namespace HeatInteractive.VRDebugger
         [SerializeField] private TMP_Text warningText;
         [SerializeField] private TMP_Text errorText;
 
-        protected override void Awake()
-        {
-            base.Awake();
-
-            VRDebug.SubscribeDebugLogEvent(OnDebugLogEvent);
-        }
-
-        private void OnDestroy()
-        {
-            VRDebug.UnsubscribeDebugLogEvent(OnDebugLogEvent);
-        }
-
-        private void OnDebugLogEvent(int _)
+        private void Update()
         {
             int infoCount = 0;
             int warningCount = 0;

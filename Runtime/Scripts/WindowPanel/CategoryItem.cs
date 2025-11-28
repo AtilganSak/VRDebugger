@@ -16,7 +16,7 @@ namespace HeatInteractive.VRDebugger
         {
             headerText.text = categoryName;
         }
-
+        
         public void RebuildLayout()
         {
             LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);

@@ -12,23 +12,19 @@ namespace HeatInteractive.VRDebugger
         [SerializeField] private GameObject logCountObject;
         [SerializeField] private TMP_Text logCountText;
         [SerializeField] private RectTransform rectTransform;
-
-        private int  _uniqueID;
-    
+        
         public void Init(int uniqueID, Sprite logTypeIcon)
         {
-            _uniqueID = uniqueID;
-        
-            messageText.text = VRDebug.DebugLogsDict[_uniqueID].Message;
+            messageText.text = VRDebug.DebugLogsDict[uniqueID].Message;
             logTypeImage.sprite = logTypeIcon;
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
         }
 
-        public void Refresh()
+        public void Refresh(int uniqueID)
         {
-            logCountObject.SetActive(VRDebug.DebugLogsDict[_uniqueID].LogCount > 0);
-            logCountText.text = VRDebug.DebugLogsDict[_uniqueID].LogCount.ToString();
+            logCountObject.SetActive(VRDebug.DebugLogsDict[uniqueID].LogCount > 0);
+            logCountText.text = VRDebug.DebugLogsDict[uniqueID].LogCount.ToString();
         }
     }
 }

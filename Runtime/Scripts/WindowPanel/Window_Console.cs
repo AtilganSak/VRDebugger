@@ -7,11 +7,13 @@ namespace HeatInteractive.VRDebugger
 {
     public class Window_Console : BaseWindow
     {
-        [Header("Category")]
-        [SerializeField] private CategoryItem categoryItemPrefab;
+        [Header("Category Items")]
+        [SerializeField] private CategoryItem debugLogCategoryItemPrefab;
+        [SerializeField] private CategoryItem constantCategoryItemPrefab;
 
-        [Header("Debug Log")]
+        [Header("Log Items")]
         [SerializeField] private DebugLogItem debugLogItemPrefab;
+        [SerializeField] private ConstantLogItem constantLogItemPrefab;
 
         [Header("Buttons")]
         [SerializeField] private Button clearButton;
@@ -21,14 +23,17 @@ namespace HeatInteractive.VRDebugger
         [SerializeField] private ControlButton errorControlButton;
 
         [Header("Common")]
-        [SerializeField] private Transform logsParent;
+        [SerializeField] private Transform debugLogsParent;
+        [SerializeField] private Transform constantLogsParent;
 
         [SerializeField] private Sprite infoIcon;
         [SerializeField] private Sprite warningIcon;
         [SerializeField] private Sprite errorIcon;
 
         private Dictionary<int, List<DebugLogItem>> _debugLogs = new();
-        private Dictionary<string, CategoryItem> _categories = new();
+        private Dictionary<int, ConstantLogItem> _constantLogs = new();
+        private Dictionary<string, CategoryItem> _debugLogCategories = new();
+        private Dictionary<string, CategoryItem> _constantLogCategories = new();
         private Dictionary<VRLogType, int> _logCounts = new();
         private Dictionary<VRLogType, bool> _logVisibles = new();
 
@@ -37,6 +42,7 @@ namespace HeatInteractive.VRDebugger
             base.Awake();
 
             VRDebug.SubscribeDebugLogEvent(OnNewDebugLogged);
+            VRDebug.SubscribeConstantLogEvent(OnNewConstantLogged);
             Application.logMessageReceived += OnNewLogMessageReceived;
 
             clearButton.onClick.AddListener(OnPressedClearButton);
@@ -59,6 +65,7 @@ namespace HeatInteractive.VRDebugger
         private void OnDestroy()
         {
             VRDebug.UnsubscribeDebugLogEvent(OnNewDebugLogged);
+            VRDebug.UnsubscribeConstantLogEvent(OnNewConstantLogged);
         }
         
         private void OnNewLogMessageReceived(string condition, string stackTrace, LogType type)
@@ -68,18 +75,33 @@ namespace HeatInteractive.VRDebugger
 
         private void OnNewDebugLogged(int uniqueID)
         {
-            CreateCategoryIfNotExists(VRDebug.DebugLogCategoriesDict[uniqueID].CategoryName);
+            CreateDebugLogCategoryIfNotExists(VRDebug.LogCategoriesDict[uniqueID].CategoryName);
             CreateOrUpdateDebugLog(uniqueID);
             UpdateLogCount(uniqueID);
         }
-
-        private void CreateCategoryIfNotExists(string categoryName)
+        
+        private void OnNewConstantLogged(int uniqueID)
         {
-            if (!_categories.ContainsKey(categoryName))
+            CreateConstantLogCategoryIfNotExists(VRDebug.LogCategoriesDict[uniqueID].CategoryName);
+            CreateOrUpdateConstantLog(uniqueID);
+        }
+
+        private void CreateDebugLogCategoryIfNotExists(string categoryName)
+        {
+            if (!_debugLogCategories.ContainsKey(categoryName))
             {
-                var newCategory = Instantiate(categoryItemPrefab, logsParent);
+                var newCategory = Instantiate(debugLogCategoryItemPrefab, debugLogsParent);
                 newCategory.Init(categoryName);
-                _categories.Add(categoryName, newCategory);
+                _debugLogCategories.Add(categoryName, newCategory);
+            }
+        }
+        private void CreateConstantLogCategoryIfNotExists(string categoryName)
+        {
+            if (!_constantLogCategories.ContainsKey(categoryName))
+            {
+                var newCategory = Instantiate(constantCategoryItemPrefab, constantLogsParent);
+                newCategory.Init(categoryName);
+                _constantLogCategories.Add(categoryName, newCategory);
             }
         }
 
@@ -87,12 +109,12 @@ namespace HeatInteractive.VRDebugger
         {
             if (_debugLogs.TryGetValue(uniqueID, out List<DebugLogItem> logItems))
             {
-                if (VRDebug.DebugLogCategoriesDict[uniqueID].Collapsed)
+                if (VRDebug.LogCategoriesDict[uniqueID].Collapsed)
                 {
                     var log = VRDebug.DebugLogsDict[uniqueID];
                     log.LogCount++;
                     VRDebug.DebugLogsDict[uniqueID] = log;
-                    logItems[0].Refresh();
+                    logItems[0].Refresh(uniqueID);
                     return;
                 }
             }
@@ -101,13 +123,28 @@ namespace HeatInteractive.VRDebugger
                 logItems = new List<DebugLogItem>();
             }
 
-            var category = _categories[VRDebug.DebugLogCategoriesDict[uniqueID].CategoryName];
+            var category = _debugLogCategories[VRDebug.LogCategoriesDict[uniqueID].CategoryName];
             var newLogItem = Instantiate(debugLogItemPrefab, category.Layout);
             newLogItem.Init(uniqueID, GetLogIcon(VRDebug.DebugLogsDict[uniqueID].vrLogType));
             if (logItems.Count == 0)
                 _debugLogs.Add(uniqueID, logItems);
             logItems.Add(newLogItem);
             newLogItem.gameObject.SetActive(_logVisibles[VRDebug.DebugLogsDict[uniqueID].vrLogType]);
+        }
+        
+        private void CreateOrUpdateConstantLog(int uniqueID)
+        {
+            if (_constantLogs.TryGetValue(uniqueID, out ConstantLogItem logItem))
+            {
+                logItem.Refresh(uniqueID);
+                return;
+            }
+
+            var category = _constantLogCategories[VRDebug.LogCategoriesDict[uniqueID].CategoryName];
+            var newLogItem = Instantiate(constantLogItemPrefab, category.Layout);
+            newLogItem.Init(VRDebug.ConstantLogsDict[uniqueID].ConstantName);
+            newLogItem.Refresh(uniqueID);
+            _constantLogs.Add(uniqueID, newLogItem);
         }
 
         private void UpdateLogCount(int uniqueID)
@@ -121,15 +158,15 @@ namespace HeatInteractive.VRDebugger
 
         private void OnPressedClearButton()
         {
-            if (_categories.Count == 0)
+            if (_debugLogCategories.Count == 0)
                 return;
 
-            foreach (var pair in _categories)
+            foreach (var pair in _debugLogCategories)
             {
                 Destroy(pair.Value.gameObject);
             }
             _debugLogs.Clear();
-            _categories.Clear();
+            _debugLogCategories.Clear();
             var logTypeList = Enum.GetValues(typeof(VRLogType));
             foreach (var logType in logTypeList)
             {
@@ -138,7 +175,7 @@ namespace HeatInteractive.VRDebugger
             }
             
             VRDebug.DebugLogsDict.Clear();
-            VRDebug.DebugLogCategoriesDict.Clear();
+            VRDebug.LogCategoriesDict.Clear();
             
             infoControlButton.SetCount(0);
             warningControlButton.SetCount(0);
@@ -165,7 +202,7 @@ namespace HeatInteractive.VRDebugger
 
         private void ChangeCategoriesVisibility()
         {
-            foreach (var pair in _categories)
+            foreach (var pair in _debugLogCategories)
             {
                 pair.Value.gameObject.SetActive(pair.Value.GetActiveLogCount() > 0);
             }
